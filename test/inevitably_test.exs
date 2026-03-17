@@ -146,3 +146,25 @@ defmodule InevitablyTest do
 
   defp restore_env(key, value), do: Application.put_env(:inevitably, key, value)
 end
+
+defmodule Inevitably.AsyncCompatibilityTest do
+  use ExUnit.Case, async: true
+
+  import Inevitably
+
+  test "works in async test processes when using per-call options" do
+    Process.put(:attempt, 0)
+
+    result =
+      eventually timeout: 100, interval: 1 do
+        attempt = Process.get(:attempt, 0) + 1
+        Process.put(:attempt, attempt)
+
+        assert attempt >= 3
+        :async_ok
+      end
+
+    assert result == :async_ok
+    assert Process.get(:attempt) == 3
+  end
+end
