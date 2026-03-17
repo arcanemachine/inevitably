@@ -29,6 +29,9 @@ defmodule Inevitably do
     timeout = resolve_option(opts, :timeout, @default_timeout)
     interval = resolve_option(opts, :interval, @default_interval)
 
+    validate_positive_integer!(:timeout, timeout)
+    validate_positive_integer!(:interval, interval)
+
     start_ms = System.monotonic_time(:millisecond)
     do_run(fun, start_ms, timeout, interval)
   end
@@ -50,5 +53,12 @@ defmodule Inevitably do
 
   defp resolve_option(opts, key, default) do
     Keyword.get(opts, key, Application.get_env(:inevitably, key, default))
+  end
+
+  defp validate_positive_integer!(_key, value) when is_integer(value) and value > 0, do: :ok
+
+  defp validate_positive_integer!(key, value) do
+    raise ArgumentError,
+          "#{inspect(key)} must be a positive integer, got: #{inspect(value)}"
   end
 end
