@@ -22,3 +22,7 @@ erl_crash.dump
 # Ignore package tarball (built via "mix hex.build").
 inevitably-*.tar
 
+## Custom rules
+
+# Allow local `.tool-versions` for testing, but do not commit them
+.tool-versions
