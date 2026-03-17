@@ -20,7 +20,8 @@ defmodule Inevitably.MixProject do
 
       # Docs
       name: @project_name,
-      source_url: @source_url
+      source_url: @source_url,
+      docs: docs()
     ]
   end
 
@@ -40,6 +41,19 @@ defmodule Inevitably.MixProject do
   end
 
   defp deps do
-    []
+    [
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
+    ]
+  end
+
+  defp docs do
+    [
+      main: "readme",
+      extras: [
+        "README.md": [title: "README"],
+        "CHANGELOG.md": [title: "Changelog"]
+      ],
+      formatters: ["html"]
+    ]
   end
 end
