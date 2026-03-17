@@ -46,7 +46,9 @@ defmodule InevitablyTest do
     error =
       assert_raise ExUnit.AssertionError, fn ->
         eventually timeout: 30, interval: 1 do
-          assert :ok == :error
+          expected = :ok
+          actual = Process.get(:actual_value, :error)
+          assert expected == actual
         end
       end
 

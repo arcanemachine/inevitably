@@ -1,18 +1,54 @@
 defmodule Inevitably do
   @moduledoc """
-  Documentation for `Inevitably`.
+  Retry ExUnit assertions until they pass or a timeout is reached.
   """
 
-  @doc """
-  Hello world.
+  @default_timeout 1_000
+  @default_interval 20
 
-  ## Examples
+  defmacro eventually(do: block) do
+    quote do
+      Inevitably.run(fn ->
+        unquote(block)
+      end)
+    end
+  end
 
-      iex> Inevitably.hello()
-      :world
+  defmacro eventually(opts, do: block) do
+    quote do
+      Inevitably.run(
+        fn ->
+          unquote(block)
+        end,
+        unquote(opts)
+      )
+    end
+  end
 
-  """
-  def hello do
-    :world
+  def run(fun, opts \\ []) when is_function(fun, 0) do
+    timeout = resolve_option(opts, :timeout, @default_timeout)
+    interval = resolve_option(opts, :interval, @default_interval)
+
+    start_ms = System.monotonic_time(:millisecond)
+    do_run(fun, start_ms, timeout, interval)
+  end
+
+  defp do_run(fun, start_ms, timeout, interval) do
+    fun.()
+  rescue
+    error in ExUnit.AssertionError ->
+      elapsed = System.monotonic_time(:millisecond) - start_ms
+
+      if elapsed >= timeout do
+        reraise error, __STACKTRACE__
+      else
+        remaining = timeout - elapsed
+        Process.sleep(min(interval, remaining))
+        do_run(fun, start_ms, timeout, interval)
+      end
+  end
+
+  defp resolve_option(opts, key, default) do
+    Keyword.get(opts, key, Application.get_env(:inevitably, key, default))
   end
 end
