@@ -25,6 +25,7 @@ defmodule Inevitably do
     end
   end
 
+  @doc false
   def run(fun, opts \\ []) when is_function(fun, 0) do
     timeout = resolve_option(opts, :timeout, @default_timeout)
     interval = resolve_option(opts, :interval, @default_interval)
