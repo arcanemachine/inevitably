@@ -45,6 +45,10 @@ result =
 assert result == 42
 ```
 
+> #### Tip {: .tip}
+>
+> Retries happen only for `ExUnit.AssertionError`. Any other exception is raised immediately.
+
 You can override timeout and interval per call:
 
 ```elixir
@@ -59,6 +63,8 @@ Set global defaults in your project's config:
 
 `config/test.exs`
 ```elixir
+import Config
+
 config :inevitably, timeout: 500, interval: 10
 ```
 
@@ -68,6 +74,6 @@ These values will now be used as the defaults when calling `eventually` without 
 
 Option precedence is:
 
-1. Use per-call options,
-2. Then use global values set in project config,
-3. Then fall back to built-in defaults (`timeout: 1000`, `interval: 20`)
+- Use per-call options (e.g. `eventually timeout: 5000, interval: 25 do ... end`),
+- then use global values set in project config (e.g. in `config/test.exs`),
+- then fall back to this package's built-in defaults (`timeout: 1000`, `interval: 20`)
