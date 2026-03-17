@@ -92,6 +92,56 @@ defmodule InevitablyTest do
     assert Process.get(:attempt) == 3
   end
 
+  test "raises when per-call timeout is invalid" do
+    assert_raise ArgumentError, fn ->
+      eventually timeout: 0, interval: 1 do
+        :ok
+      end
+    end
+
+    assert_raise ArgumentError, fn ->
+      eventually timeout: "100", interval: 1 do
+        :ok
+      end
+    end
+  end
+
+  test "raises when per-call interval is invalid" do
+    assert_raise ArgumentError, fn ->
+      eventually timeout: 100, interval: 0 do
+        :ok
+      end
+    end
+
+    assert_raise ArgumentError, fn ->
+      eventually timeout: 100, interval: "1" do
+        :ok
+      end
+    end
+  end
+
+  test "raises when global config timeout is invalid" do
+    Application.put_env(:inevitably, :timeout, 0)
+    Application.put_env(:inevitably, :interval, 1)
+
+    assert_raise ArgumentError, fn ->
+      eventually do
+        :ok
+      end
+    end
+  end
+
+  test "raises when global config interval is invalid" do
+    Application.put_env(:inevitably, :timeout, 100)
+    Application.put_env(:inevitably, :interval, 0)
+
+    assert_raise ArgumentError, fn ->
+      eventually do
+        :ok
+      end
+    end
+  end
+
   defp restore_env(key, nil), do: Application.delete_env(:inevitably, key)
 
   defp restore_env(key, value), do: Application.put_env(:inevitably, key, value)
