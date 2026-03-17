@@ -33,7 +33,7 @@ defmodule Inevitably.MixProject do
   defp package do
     [
       name: :inevitably,
-      files: ~w(.formatter.exs LICENSE README.md mix.exs lib),
+      files: ~w(.formatter.exs CHANGELOG.md LICENSE README.md mix.exs lib),
       licenses: ["MIT"],
       links: %{"GitHub" => @source_url}
     ]
